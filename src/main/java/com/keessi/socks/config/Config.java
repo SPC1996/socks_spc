@@ -44,7 +44,6 @@ public final class Config {
 
     private final Properties properties = new OrderProperties();
     private static final Config ins = new Config();
-    private static final String configFilePath = "resource/local.properties";
 
     private Config() {
         properties.put("remoteHost", REMOTE_HOST);
@@ -54,6 +53,7 @@ public final class Config {
         properties.put("listenPort", LISTEN_PORT);
         properties.put("user", USER);
 
+        String configFilePath = getClass().getResource("/").getFile() + "local.properties";
         File configFile = new File(configFilePath);
         try {
             properties.load(new FileInputStream(configFilePath));
