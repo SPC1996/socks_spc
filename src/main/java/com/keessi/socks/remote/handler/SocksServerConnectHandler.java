@@ -9,15 +9,16 @@ import io.netty.handler.codec.socks.SocksCmdResponse;
 import io.netty.handler.codec.socks.SocksCmdStatus;
 import io.netty.util.concurrent.Promise;
 
+@ChannelHandler.Sharable
 public class SocksServerConnectHandler extends SimpleChannelInboundHandler<SocksCmdRequest> {
-    private final Bootstrap bootstrap=new Bootstrap();
+    private final Bootstrap bootstrap = new Bootstrap();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, SocksCmdRequest msg) throws Exception {
-        Promise<Channel> promise=ctx.executor().newPromise();
+        Promise<Channel> promise = ctx.executor().newPromise();
         promise.addListener(
                 future -> {
-                    final Channel outboundChannel= (Channel) future.getNow();
+                    final Channel outboundChannel = (Channel) future.getNow();
                     if (future.isSuccess()) {
                         ctx.channel()
                                 .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, msg.addressType()))
@@ -34,7 +35,7 @@ public class SocksServerConnectHandler extends SimpleChannelInboundHandler<Socks
                     }
                 }
         );
-        final Channel inboundChannel=ctx.channel();
+        final Channel inboundChannel = ctx.channel();
         bootstrap.group(inboundChannel.eventLoop())
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
@@ -42,10 +43,10 @@ public class SocksServerConnectHandler extends SimpleChannelInboundHandler<Socks
                 .handler(new DirectClientHandler(promise));
         bootstrap.connect(msg.host(), msg.port()).addListener((ChannelFutureListener) future -> {
             if (!future.isSuccess()) {
-               ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, msg.addressType()));
-               if (ctx.channel().isActive()) {
-                   ctx.channel().writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-               }
+                ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, msg.addressType()));
+                if (ctx.channel().isActive()) {
+                    ctx.channel().writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+                }
             }
         });
     }

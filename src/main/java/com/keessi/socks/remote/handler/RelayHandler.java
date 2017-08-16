@@ -1,16 +1,17 @@
 package com.keessi.socks.remote.handler;
 
-import com.keessi.socks.remote.SocksServer;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.concurrent.EventExecutorGroup;
 
 public class RelayHandler extends ChannelInboundHandlerAdapter {
     private final Channel relayChannel;
 
     public RelayHandler(Channel relayChannel) {
-        this.relayChannel=relayChannel;
+        this.relayChannel = relayChannel;
     }
 
     @Override

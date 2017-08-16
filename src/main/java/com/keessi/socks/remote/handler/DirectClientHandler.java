@@ -10,7 +10,7 @@ public class DirectClientHandler extends ChannelInboundHandlerAdapter {
     private final Promise<Channel> promise;
 
     public DirectClientHandler(Promise<Channel> promise) {
-        this.promise=promise;
+        this.promise = promise;
     }
 
     @Override

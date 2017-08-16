@@ -27,7 +27,7 @@ public class ForwardProxy {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new LoggingHandler("byte_logger", LogLevel.DEBUG));
+                            ch.pipeline().addLast(new LoggingHandler("byte_logger", LogLevel.INFO));
                             ch.pipeline().addLast(new ForwardProxyFrontendHandler(remoteHost, remotePort));
                         }
                     });

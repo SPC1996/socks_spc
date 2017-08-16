@@ -1,7 +1,5 @@
 package com.keessi.socks.local.handler;
 
-import com.keessi.socks.local.codec.FakeClientDecoder;
-import com.keessi.socks.local.codec.FakeClientEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -29,15 +27,13 @@ public class ForwardProxyFrontendHandler extends ChannelInboundHandlerAdapter {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new FakeClientDecoder());
-                        ch.pipeline().addLast(new FakeClientEncoder());
                         ch.pipeline().addLast(new ForwardProxyBackendHandler(inboundChannel));
                     }
                 });
         ChannelFuture future = bootstrap.connect(remoteHost, remotePort);
         outboundChannel = future.channel();
         future.addListener((ChannelFutureListener) channelFuture -> {
-            if (future.isSuccess()) {
+            if (channelFuture.isSuccess()) {
                 inboundChannel.read();
             } else {
                 inboundChannel.close();

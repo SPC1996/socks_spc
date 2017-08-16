@@ -3,11 +3,13 @@ package com.keessi.socks.remote.handler;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.socks.*;
 
-public class SocksServerHandler extends SimpleChannelInboundHandler<SocksRequest>{
+@ChannelHandler.Sharable
+public class SocksServerHandler extends SimpleChannelInboundHandler<SocksRequest> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, SocksRequest msg) throws Exception {
         System.out.println(msg.requestType());
@@ -21,8 +23,8 @@ public class SocksServerHandler extends SimpleChannelInboundHandler<SocksRequest
                 ctx.write(new SocksAuthResponse(SocksAuthStatus.SUCCESS));
                 break;
             case CMD:
-                SocksCmdRequest request= (SocksCmdRequest) msg;
-                if (request.cmdType()==SocksCmdType.CONNECT) {
+                SocksCmdRequest request = (SocksCmdRequest) msg;
+                if (request.cmdType() == SocksCmdType.CONNECT) {
                     ctx.pipeline().addLast(new SocksServerConnectHandler());
                     ctx.pipeline().remove(this);
                     ctx.fireChannelRead(msg);
